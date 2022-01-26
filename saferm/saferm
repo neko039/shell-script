@@ -1,0 +1,105 @@
+#!/bin/bash
+
+tmpdir="$HOME/saferm/.Recycle_Bin"
+historyfile="$HOME/saferm/.rm_history"
+realrm="$(which rm)"
+copy="$(which cp)"
+move="$(which mv)"
+info_page="$HOME/saferm/README"
+
+# if no option then use rm
+if [ $# -eq 0 ];
+then 
+	exec $realrm
+fi
+
+# if no tmpdir then create dir
+if [ ! -d $tmpdir ];
+then
+	if [ ! -w $HOME ];
+	then
+		echo "error:Couldn't create dir in $HOME"
+		exit 1
+	fi
+	mkdir $tmpdir
+	chmod 700 $tmpdir
+fi
+
+# add history
+echo "$0 $*" >> $historyfile
+
+
+# option
+flags=""
+
+while getopts "fiIrRdvHU:A" opt
+do
+	case $opt in
+	f)
+		exec $realrm "$@"
+		;;
+	H)
+		cat -n $historyfile
+		exit 0
+		;;
+	U)
+		history_log=$(sed -n ${OPTARG}p $historyfile)
+		checkopt=""
+		#original_path=""
+		echo -e "now is undo: \"$history_log\""
+		col_num=$(echo $history_log|awk '{print NF}')
+		count=0
+		for(( i=2;i<=$col_num;i++ ))
+		do
+			col_info=$(echo $history_log|awk '{print $'''$i'''}')
+			if [[ $col_info =~ ^- ]];
+			then
+				checkopt="${checkopt}$col_info "
+			else
+				original_path[$count]="$col_info"
+				count=$(( $count+1 ))
+			fi
+		done	
+		if [[ $checkopt =~ R|r|i|I|d|v ]];
+		then
+			echo "can undo"
+			for(( j=0;j<count;j++ ))
+			do
+			$move $tmpdir/$(basename ${original_path[j]}) ${original_path[j]}
+			done
+		elif [[ $checkopt =~ H|U|f|A ]];
+		then
+			echo "could not undo"
+		else
+			:
+		fi
+			
+		exit 0
+		;;
+	A)
+		sed -n '/^OPTIONS/,$p' $info_page|sed 's/OPTIONS/usage:/g'
+		exit 0
+		;;
+	*)
+		flags="$flag -$opt"
+		;;
+	esac
+done
+shift $(( $OPTIND - 1 ))
+
+#run rm 
+for arg 
+do
+	newname="$tmpdir/$(basename "$arg")"
+	if [ -f "$arg" ];
+ 	then
+    		$copy "$arg" "$newname"
+	elif [ -d "$arg" ];
+	then
+    		$copy -r "$arg" "$newname"
+	else
+		:
+  	fi
+done
+
+exec $realrm $flags "$@"

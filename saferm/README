@@ -1,0 +1,39 @@
+NAME
+       saferm - rm expansion function
+
+SYNOPSIS      
+       saferm [OPTION]... [FILE]
+
+DESCRIPTION
+       Solve the problem of accidentally using rm to delete important data,this command will backup data before delete, and the delete data will be removed every day,like window Recycle Bin.
+       If the -f,-i,-I,-r(-R),-d,-v option is given, this command will use rm option to run(example: "saferm -r dir" is equal to using "rm -r dir").
+       If the -U,-H  option is given,this command will run.
+       
+OPTIONS
+rm original option: 
+       -f
+              ignore nonexistent files and arguments, never prompt
+
+       -i     
+              prompt before every removal
+
+       -I
+              prompt once before removing  more  than  three  files,  or  when
+              removing recursively; less intrusive than -i, while still giving
+              protection against most mistakes
+
+       -r
+              remove directories and their contents recursively
+
+       -d
+              remove empty directories
+
+       -v
+              explain what is being done
+saferm option:
+       -U 
+              use "-U number" to undo rm action,number indicates the list number in the history of the action to be undo.
+       -H
+              see usage history about saferm,the history will be clear every day.
+       -A
+              show help infomation.
