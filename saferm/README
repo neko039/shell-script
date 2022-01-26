@@ -7,8 +7,13 @@ SYNOPSIS
 DESCRIPTION
        Solve the problem of accidentally using rm to delete important data,this command will backup data before delete, and the delete data will be removed every day,like window Recycle Bin.
        If the -f,-i,-I,-r(-R),-d,-v option is given, this command will use rm option to run(example: "saferm -r dir" is equal to using "rm -r dir").
-       If the -U,-H  option is given,this command will run.
-       
+       If the -U,-H,-A option is given,this command will run.
+
+BEFORE USE
+       Create a user crontab : "0 12 * * * /usr/bin/rm $HOME/.Recycle_Bin".
+       Put saferm in "/usr/local/sbin".
+       Put README in "/usr/share/doc/saferm" .
+
 OPTIONS
 rm original option: 
        -f

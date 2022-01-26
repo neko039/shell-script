@@ -1,11 +1,11 @@
 #!/bin/bash
 
-tmpdir="$HOME/saferm/.Recycle_Bin"
-historyfile="$HOME/saferm/.rm_history"
+tmpdir="$HOME/.Recycle_Bin"
+historyfile="$HOME/.rm_history"
 realrm="$(which rm)"
 copy="$(which cp)"
 move="$(which mv)"
-info_page="$HOME/saferm/README"
+info_page="/usr/share/doc/saferm/README"
 
 # if no option then use rm
 if [ $# -eq 0 ];
