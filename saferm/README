@@ -11,9 +11,11 @@ DESCRIPTION
        reference : https://ithelp.ithome.com.tw/articles/10228425
 
 BEFORE USE
-       Create a user crontab : "0 12 * * * /usr/bin/rm $HOME/.Recycle_Bin".
+       run setting with root permission.
+       setting will do :
+       Create a system crontab : "0 12 * * * /usr/bin/rm /.Recycle_Bin/*".
        Put saferm in "/usr/local/sbin".
-       Put README in "/usr/share/doc/saferm" .
+       Put README in "/usr/share/doc/saferm".
 
 OPTIONS
 rm original option: 
@@ -39,6 +41,7 @@ rm original option:
 saferm option:
        -U 
               use "-U number" to undo rm action,number indicates the list number in the history of the action to be undo.
+              if use -f option to rm, could not undo.
        -H
               see usage history about saferm,the history will be clear every day.
        -A
