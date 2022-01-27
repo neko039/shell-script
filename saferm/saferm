@@ -1,28 +1,23 @@
 #!/bin/bash
 
-tmpdir="$HOME/.Recycle_Bin"
+bins="/.Recycle_Bin"
+own_bin="$bins/$(id -nu)"
 historyfile="$HOME/.rm_history"
 realrm="$(which rm)"
 copy="$(which cp)"
 move="$(which mv)"
 info_page="/usr/share/doc/saferm/README"
 
-# if no option then use rm
-if [ $# -eq 0 ];
-then 
-	exec $realrm
-fi
-
 # if no tmpdir then create dir
-if [ ! -d $tmpdir ];
+if [ ! -d $own_bin ];
 then
-	if [ ! -w $HOME ];
+	if [ ! -d $bins ] || [ ! -w $bins ];
 	then
-		echo "error:Couldn't create dir in $HOME"
+		echo "error:Need to create dir: $bins or $bin need wirte permission"
 		exit 1
 	fi
-	mkdir $tmpdir
-	chmod 700 $tmpdir
+	mkdir $own_bin
+	chmod 700 $own_bin
 fi
 
 # add history
@@ -65,11 +60,18 @@ do
 			echo "can undo"
 			for(( j=0;j<count;j++ ))
 			do
-			$move $tmpdir/$(basename ${original_path[j]}) ${original_path[j]}
+				$move $own_bin/$(basename ${original_path[j]}) ${original_path[j]}
 			done
 		elif [[ $checkopt =~ H|U|f|A ]];
 		then
 			echo "could not undo"
+		elif [ ! $checkopt ];
+		then
+			echo "no option"
+			for(( k=0;k<count;k++ ))
+                        do        
+                        	$move $own_bin/$(basename ${original_path[k]}) ${original_path[k]}
+			done 
 		else
 			:
 		fi
@@ -90,7 +92,7 @@ shift $(( $OPTIND - 1 ))
 #run rm 
 for arg 
 do
-	newname="$tmpdir/$(basename "$arg")"
+	newname="$own_bin/$(basename "$arg")"
 	if [ -f "$arg" ];
  	then
     		$copy "$arg" "$newname"
