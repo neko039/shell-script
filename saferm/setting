@@ -4,7 +4,7 @@
 mkdir /.Recycle_Bin
 
 # create system crontab
-echo "* 12 * * * /usr/bin/rm /.Recycle_Bin/*" >> /etc/cron.d/clear_bin
+echo "* 12 * * * root /usr/bin/rm /.Recycle_Bin/*" >> /etc/cron.d/clear_bin
 
 # mv saferm
 mv saferm /usr/local/sbin
