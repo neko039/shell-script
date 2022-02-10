@@ -5,6 +5,7 @@ title=""
 flag=""
 sort_opt=""
 sort_index=""
+data=""
 getflag(){
 	case $1 in
 		name)
@@ -31,10 +32,32 @@ getflag(){
 	esac
 	
 }
-if [ $# -eq 0 ];
-then 
-	echo "use default setting"
-	echo -e "username:uid:gid:comment:homedir:shell\n$(cat /etc/passwd|cut -d ":" -f 1,3-8|sort -t ":" -k 1)"|column -t -s ":"
+
+data=$(cat /etc/passwd|awk -F ":" '{ if($7 == "/sbin/nologin"){print $0":system\\n" }else{print $0":general\\n"}}')
+if [ $# -eq 1 ];
+then
+	if [ "$1" == "system" ];
+	then
+		echo "System User:"
+		echo -e $data| sed 's/^\s//g'|awk -F ":" '{ if($8 == "system"){print $1":"$3":"$4":"$5":"$6":"$7} }'|column -s ":" -t
+	elif [ "$1" == "general" ];
+	then
+		echo "General User:"
+		echo -e $data| sed 's/^\s//g'|awk -F ":" '{ if($8 == "general"){print $1":"$3":"$4":"$5":"$6":"$7} }'|column -s ":" -t
+	else
+		if [[ $1 =~ ^- ]];
+		then 
+			:
+		else 
+			echo "error,no option"
+		fi
+	fi
+elif [ $# -eq 0 ];
+then
+	echo "System User:"
+	echo -e $data| sed 's/^\s//g'|awk -F ":" '{ if($8 == "system"){print $1":"$3":"$4":"$5":"$6":"$7} }'|column -s ":" -t
+	echo "General User:"
+	echo -e $data| sed 's/^\s//g'|awk -F ":" '{ if($8 == "general"){print $1":"$3":"$4":"$5":"$6":"$7} }'|column -s ":" -t	
 fi
 
 while getopts "s:o:h" opt
@@ -100,5 +123,8 @@ do
 done
 
 shift $(( $OPTIND-1 ))
-
+if [ ! $sort_index ];
+then
+	sort_index=1
+fi
 echo -e "$title\n$(cat /etc/passwd|awk -F ":" '{print '''$content'''}'|sort $sort_opt -t ":" -k $sort_index)"|column -t -s ":"
