@@ -1,6 +1,10 @@
 #!/bin/bash
 
-header=""
+content=""
+title=""
+flag=""
+sort_opt=""
+sort_index=""
 getflag(){
 	case $1 in
 		name)
@@ -33,11 +37,22 @@ then
 	echo -e "username:uid:gid:comment:homedir:shell\n$(cat /etc/passwd|cut -d ":" -f 1,3-8|sort -t ":" -k 1)"|column -t -s ":"
 fi
 
-while getopts "s:o:" opt
+while getopts "s:o:h" opt
 do
 	case $opt in
-	S)
+	s)
 		echo "Sort"
+		sort_index=$(echo "$@"|awk '{ for(i=1;i<=NF;i++){ if($i =="-o"){i=i+1;print $i}}}')
+		sort_index=$(echo $sort_index|awk '{ for(i=1;i<=NF;i++){ if($i == "'''$OPTARG'''"){print i}}}')
+		if [[ $OPTARG =~ "uid"|"gid" ]];
+		then 
+			sort_opt="-n"
+		elif [[ $OPTARG =~ "name"|"comment"|"homedir"|"shell" ]];
+		then
+			sort_opt=""
+		else
+			echo "error,don't have this option"
+		fi		
 		;;
 	o)
 		echo "choose header"
@@ -49,11 +64,11 @@ do
 			#echo $flag
 			if [ $flag ] && [ "$flag" != 0 ];
 			then
-				if [ ! $header ];
+				if [ ! $content ];
 				then
-					header="\$$flag"
+					content="\$$flag"
 				else
-					header="$header\":\"\$$flag"
+					content="$content\":\"\$$flag"
 				fi
 				
 			fi
@@ -74,6 +89,10 @@ do
 			flag=""
 		done
 		;;
+	h)
+		echo "help"
+		exit 0
+		;;
 	*)
 		:
 		;;
@@ -81,5 +100,5 @@ do
 done
 
 shift $(( $OPTIND-1 ))
-#echo $header
-echo -e "$title\n$(cat /etc/passwd|awk -F ":" '{print '''$header'''}')"|column -t -s ":"
+
+echo -e "$title\n$(cat /etc/passwd|awk -F ":" '{print '''$content'''}'|sort $sort_opt -t ":" -k $sort_index)"|column -t -s ":"
