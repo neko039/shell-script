@@ -5,6 +5,7 @@
 * 指令與rm通用，可以直接使用saferm來運行rm
 ## 前置步驟
 以root權限運行setting執行檔，此執行檔會運行以下動作：
+* 建立 "/.Recycle_Bin"
 * 建立系統排程: "0 12 * * * /usr/bin/rm /.Recycle_Bin/*"
 * 將saferm放到 "/usr/local/sbin" 路徑
 * 將README放到 "/usr/share/doc/saferm" 路徑
