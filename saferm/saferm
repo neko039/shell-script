@@ -67,7 +67,7 @@ do
 			echo "could not undo"
 		elif [ ! $checkopt ];
 		then
-			echo "no option"
+			#echo "no option"
 			for(( k=0;k<count;k++ ))
                         do        
                         	$move $own_bin/$(basename ${original_path[k]}) ${original_path[k]}
